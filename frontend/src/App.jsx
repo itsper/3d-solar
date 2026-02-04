@@ -4,8 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import useStore from './store/useStore';
 import Scene from './components/3d/Scene';
 import Sidebar from './components/ui/Sidebar';
-import InspectorPanel from './components/ui/InspectorPanel';
-import CalculationPanel from './components/ui/CalculationPanel';
+import RightSidebar from './components/ui/RightSidebar'; // New Import
 import { authAPI } from './services/api';
 
 function App() {
@@ -14,6 +13,10 @@ function App() {
   const [authMode, setAuthMode] = useState('login');
   const [authForm, setAuthForm] = useState({ email: '', password: '', name: '' });
   const [authError, setAuthError] = useState('');
+  
+  // Left Sidebar States
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     if (user.token) {
@@ -26,7 +29,6 @@ function App() {
   const handleAuth = async (e) => {
     e.preventDefault();
     setAuthError('');
-    
     try {
       if (authMode === 'login') {
         const data = await authAPI.login(authForm.email, authForm.password);
@@ -48,7 +50,6 @@ function App() {
       setAuthMode('login');
       return;
     }
-    
     try {
       await saveProject();
       alert('Project saved successfully!');
@@ -59,9 +60,7 @@ function App() {
 
   const handleNewProject = () => {
     if (project.isDirty) {
-      if (!confirm('You have unsaved changes. Create new project anyway?')) {
-        return;
-      }
+      if (!confirm('You have unsaved changes. Create new project anyway?')) return;
     }
     newProject();
   };
@@ -85,10 +84,49 @@ function App() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-        <Sidebar onAddComponent={handleAddComponent} />
+      <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#0f172a' }}>
+        
+        {/* LEFT SIDEBAR (Assets & Tools) */}
+        {sidebarVisible && (
+          <Sidebar 
+            onAddComponent={handleAddComponent} 
+            isCollapsed={sidebarCollapsed}
+            toggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
+        )}
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Floating Show Button for Left Sidebar */}
+        {!sidebarVisible && (
+          <button
+            className="btn btn-secondary"
+            onClick={() => setSidebarVisible(true)}
+            title="Show Menu"
+            style={{
+              position: 'absolute',
+              left: '12px',
+              top: '80px',
+              zIndex: 60,
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        )}
+
+        {/* MAIN WORKSPACE */}
+        <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+          
+          {/* HEADER */}
           <div style={{
             height: '50px',
             background: 'rgba(30, 41, 59, 0.9)',
@@ -98,6 +136,8 @@ function App() {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 20px',
+            zIndex: 50,
+            position: 'relative'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <input
@@ -105,20 +145,20 @@ function App() {
                 className="input"
                 value={project.name}
                 onChange={(e) => useStore.getState().project.name = e.target.value}
-                style={{ width: '200px', background: 'transparent', border: 'none', fontSize: '1rem', fontWeight: 600 }}
+                style={{ width: '200px', background: 'transparent', border: 'none', fontSize: '1rem', fontWeight: 600, color: 'white' }}
               />
               {project.isDirty && <span style={{ color: '#f59e0b', fontSize: '0.75rem' }}>Unsaved</span>}
             </div>
 
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                className={`btn ${mode === 'select' ? 'btn-primary' : 'btn-secondary'}`}
+              <button 
+                className={`btn ${mode === 'select' ? 'btn-primary' : 'btn-secondary'}`} 
                 onClick={() => setMode('select')}
               >
                 Select
               </button>
-              <button
-                className={`btn ${mode === 'wire' ? 'btn-primary' : 'btn-secondary'}`}
+              <button 
+                className={`btn ${mode === 'wire' ? 'btn-primary' : 'btn-secondary'}`} 
                 onClick={() => setMode('wire')}
               >
                 Wire
@@ -126,10 +166,18 @@ function App() {
               
               <div style={{ width: '1px', background: 'rgba(255,255,255,0.2)', margin: '0 8px' }} />
               
-              <button className="btn btn-secondary" onClick={handleNewProject}>New</button>
               <button className="btn btn-secondary" onClick={handleSave}>Save</button>
               <button className="btn btn-secondary" onClick={handleExport}>Export</button>
               
+              {/* Optional: Sidebar Toggle in Header */}
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setSidebarVisible(!sidebarVisible)}
+                title={sidebarVisible ? 'Hide Menu' : 'Show Menu'}
+              >
+                {sidebarVisible ? 'Hide Menu' : 'Menu'}
+              </button>
+
               {user.isAuthenticated ? (
                 <button className="btn btn-danger" onClick={logout}>Logout</button>
               ) : (
@@ -138,50 +186,22 @@ function App() {
             </div>
           </div>
 
-          <div className="canvas-container">
+          {/* 3D SCENE CONTAINER */}
+          <div className="canvas-container" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
             <Scene />
-            
             {mode === 'wire' && (
               <div className="mode-indicator">
                 Wire Mode: Click first component, then second component to connect
               </div>
             )}
-            
-            {/* Quick add buttons */}
-            <div style={{
-              position: 'absolute',
-              bottom: '220px',
-              right: '16px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              zIndex: 10,
-            }}>
-              <button className="btn btn-secondary" onClick={() => handleAddComponent('solarPanel')}>
-                + Panel
-              </button>
-              <button className="btn btn-secondary" onClick={() => handleAddComponent('inverter')}>
-                + Inverter
-              </button>
-              <button className="btn btn-secondary" onClick={() => handleAddComponent('battery')}>
-                + Battery
-              </button>
-              <button className="btn btn-secondary" onClick={() => handleAddComponent('roof')}>
-                + Roof
-              </button>
-              <button className="btn btn-secondary" onClick={() => handleAddComponent('wall')}>
-                + Wall
-              </button>
-            </div>
           </div>
 
-          <div className="bottom-panel">
-            <InspectorPanel />
-            <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
-            <CalculationPanel />
-          </div>
+          {/* RIGHT SIDEBAR (Inspector & System Calculations) */}
+          <RightSidebar />
+
         </div>
 
+        {/* AUTH MODAL */}
         {showAuthModal && (
           <div style={{
             position: 'fixed',

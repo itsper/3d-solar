@@ -14,17 +14,7 @@ export default function CalculationPanel() {
   } = calculations;
 
   return (
-    <div className="calculation-panel">
-      <h3 style={{ 
-        fontSize: '0.75rem', 
-        color: '#94a3b8', 
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        marginBottom: '16px'
-      }}>
-        System Calculations
-      </h3>
-
+    <div className="calculation-panel-content">
       <div className="calculation-grid">
         <div className="calculation-card">
           <div className="calculation-label">Total Panels</div>

@@ -228,22 +228,43 @@ function SceneContent() {
       })}
 
       {settings.showWires &&
-        wires.map((wire) => (
-          <Wire
-            key={wire.id}
-            wire={wire}
-            fromPosition={getComponentPosition(wire.fromComponentId)}
-            toPosition={getComponentPosition(wire.toComponentId)}
-            isSelected={false}
-          />
-        ))}
+        wires.map((wire) => {
+          const fromComp = objects.find((o) => o.id === wire.fromComponentId);
+          const toComp = objects.find((o) => o.id === wire.toComponentId);
+          return (
+            <Wire
+              key={wire.id}
+              wire={wire}
+              fromPosition={getComponentPosition(wire.fromComponentId)}
+              toPosition={getComponentPosition(wire.toComponentId)}
+              fromComponent={fromComp}
+              toComponent={toComp}
+              isSelected={false}
+            />
+          );
+        })}
 
-      {mode === 'wire' && wireStartComponent && (
-        <mesh position={getComponentPosition(wireStartComponent)}>
-          <sphereGeometry args={[0.3, 16, 16]} />
-          <meshBasicMaterial color="#22c55e" transparent opacity={0.5} />
-        </mesh>
-      )}
+      {mode === 'wire' && wireStartComponent && (() => {
+        const startComp = objects.find((o) => o.id === wireStartComponent);
+        const startPos = getComponentPosition(wireStartComponent);
+        
+        // Calculate side connection point for preview
+        const getPreviewPoint = (comp, pos) => {
+          if (!comp) return new THREE.Vector3(...pos);
+          const width = comp.properties?.width || 2;
+          const depth = comp.properties?.depth || 1;
+          return new THREE.Vector3(pos[0] + width / 2, pos[1], pos[2]);
+        };
+        
+        const previewPos = getPreviewPoint(startComp, startPos);
+        
+        return (
+          <mesh position={previewPos}>
+            <sphereGeometry args={[0.3, 16, 16]} />
+            <meshBasicMaterial color="#22c55e" transparent opacity={0.5} />
+          </mesh>
+        );
+      })()}
 
       <Environment preset="city" />
     </>

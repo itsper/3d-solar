@@ -9,13 +9,10 @@ export default function InspectorPanel() {
 
   if (!selectedObject) {
     return (
-      <div className="inspector-panel">
-        <div className="inspector-section">
-          <h3 className="inspector-title">Inspector</h3>
-          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-            Select an object to view its properties
-          </p>
-        </div>
+      <div className="inspector-panel-content">
+        <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
+          Select an object to view its properties
+        </p>
       </div>
     );
   }
@@ -40,7 +37,7 @@ export default function InspectorPanel() {
   ];
 
   return (
-    <div className="inspector-panel">
+    <div className="inspector-panel-content">
       <div className="inspector-section">
         <h3 className="inspector-title">Object Info</h3>
         <div className="inspector-row">

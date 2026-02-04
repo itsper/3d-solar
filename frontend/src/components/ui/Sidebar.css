@@ -1,0 +1,258 @@
+:root {
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 70px; /* Matched to your App.jsx */
+  --bg-dark: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.5); /* Slightly more transparent */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-dark);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 50;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden; /* Prevents scrollbar flickering during transition */
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+/* --- Header --- */
+.sidebar-header {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Spreads logo and button */
+  padding: 0 16px; /* Adjusted padding */
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.logo-icon-wrapper {
+  color: #fbbf24;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px; /* Prevents squishing */
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* --- Content --- */
+.sidebar-content {
+  flex: 1;
+  padding: 24px 12px; /* Reduced side padding */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  margin: 0 auto; /* Centers the dot when collapsed */
+}
+
+/* --- Component Buttons --- */
+.components-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.component-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+
+.component-btn:hover, .component-btn.active {
+  background: var(--bg-card);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* COLLAPSED STATE FIXES */
+.sidebar.collapsed .component-btn {
+  justify-content: center; /* Centers the icon box horizontally */
+  padding: 10px 0; /* Removes side padding to allow perfect centering */
+}
+
+/* ICON BOX ALIGNMENT FIX */
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  
+  /* The Magic Centering Combo */
+  display: grid; 
+  place-items: center; 
+  
+  font-size: 1.25rem;
+  color: var(--accent-color);
+  flex-shrink: 0;
+  transition: all 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Ensure SVG doesn't have extra line-height */
+.icon-box svg {
+  display: block; 
+}
+
+.component-btn:hover .icon-box, .component-btn.active .icon-box {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px -5px var(--accent-color);
+}
+
+.info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  white-space: nowrap; /* Prevents text wrap during transition */
+}
+
+.comp-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.comp-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* --- Tooltip --- */
+.sidebar-tooltip {
+  position: absolute;
+  left: 60px; /* Offset from the button */
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid var(--border-color);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+/* --- Footer --- */
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.tips-card {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.tips-card.collapsed-card {
+  padding: 0;
+  background: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+}
+
+.tips-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* UTILITIES */
+.hidden {
+  display: none;
+}
+
+.spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(-50%) translateX(10px); }
+}

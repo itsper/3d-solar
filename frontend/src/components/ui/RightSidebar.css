@@ -1,0 +1,108 @@
+:root {
+  --right-sidebar-width: 320px;
+}
+
+.right-sidebar {
+  position: absolute;
+  top: 50px; /* Below the header */
+  bottom: 0;
+  right: 0;
+  width: var(--right-sidebar-width);
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Closed State: Slide it off-screen to the right */
+.right-sidebar.closed {
+  transform: translateX(100%);
+}
+
+.right-sidebar-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Toggle Button */
+.right-sidebar-toggle {
+  position: absolute;
+  left: -24px; /* Hangs off the left edge */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 48px;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.right-sidebar-toggle:hover {
+  color: #3b82f6;
+  background: rgba(40, 50, 70, 0.95);
+}
+
+/* Header Tabs */
+.right-sidebar-header {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+/* Body Content */
+.right-sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+}
+
+/* Tweak Calculation Grid for Narrow Sidebar */
+.right-sidebar-body .calculation-grid {
+  grid-template-columns: 1fr; /* Force 1 column in sidebar */
+  gap: 12px;
+}
